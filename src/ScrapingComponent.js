@@ -1,47 +1,69 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import cheerio from 'cheerio';
 
 const ScrapingComponent = () => {
     const [url, setUrl] = useState('');
     const [scrapedText, setScrapedText] = useState('');
+    const [scrapedLinkText, setScrapedLinkedText] = useState('');
+    const [scrapedJSText, setScrapedJSText] = useState('');
 
-    const handleScrape = async () => {
+    const handleStaticScrape = async () => {
         try {
-            const response = await axios.get(url);
-            const $ = cheerio.load(response.data);
-            const scrapedData = $('p').text();
-
-            setScrapedText(scrapedData);
-
-            saveTextToFile(scrapedData);
+            const response = await axios.post('http://localhost:3001/scrape-static', { url, selector: 'p' });
+            setScrapedText(response.data.textData);
+            setScrapedLinkedText(response.data.linkData);
         } catch (error) {
-            console.error('Error scraping data:',error);
+            console.error('Error scraping static data:', error);
+        }
+    };
+
+
+    const handleDynamicScrape = async () => {
+        try {
+            const response = await axios.post('http://localhost:3001/scrape-dynamic', { url, selector: 'p'});
+            setScrapedJSText(response.data.data);
+        } catch (error) {
+            console.error('Error scraping dynamic data:', error);
         }
 
-        };
-
-    const saveTextToFile = (text) => {
-        const blob = new Blob([text], { type: 'text/plain'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'scraped_data.txt';
-        a.click();
-        URL.revokeObjectURL(url);
     };
+            
+            
+
 
     return (
         <div>
         <input
             type="text"
+            style={{backgroundColor: '#282c34', color: 'white', border: 'none', outline: 'none'}}
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="Enter URL"
+            placeholder="Feed URL..."
         />
-        <button onClick={handleScrape}>Scrape Text</button>
+        <button onClick={handleStaticScrape}>Scrape Text</button>
+        <button onClick={handleDynamicScrape}>Scrape JS text</button>
+
+        
+
+
         <div>
+            
+            {scrapedLinkText && (
+            
+            <textarea
+            
+                style={{backgroundColor: '#282c34', color: 'red', border: 'none', outline: 'none'}}
+                value={scrapedLinkText}
+                readOnly
+                rows={30}
+                cols={50}
+            />
+            
+            )}
+        
+
             {scrapedText && (
+            
             <textarea
                 style={{backgroundColor: '#282c34', color: 'white', border: 'none', outline: 'none'}}
                 value={scrapedText}
@@ -49,10 +71,24 @@ const ScrapingComponent = () => {
                 rows={30}
                 cols={100}
             />
+
             )}
+
+            {scrapedJSText && (
+            
+            <textarea
+                style={{backgroundColor: '#282c34', color: 'white', border: 'none', outline: 'none'}}
+                value={scrapedJSText}
+                readOnly
+                rows={30}
+                cols={100}
+            />
+            )}
+
         </div>
-        </div>
-        );
+    </div>
+    );
     };
+    
     
     export default ScrapingComponent;
