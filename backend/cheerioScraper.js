@@ -20,6 +20,7 @@ class cheerioScraper {
 
             });
 
+            //logging for fail-checking
             console.log("URL received:", url);
             console.log("Text Data:", textData);
             console.log("Link Data:", linkData);
@@ -34,8 +35,30 @@ class cheerioScraper {
 
 
     }
+
+    //finding additional links to loop through
+    static async scrapeLinks(url) {
+        try {
+            const response = await axios.get(url);
+            const $ = cheerio.load(response.data);
+            //gather inside an empty list
+            let links = [];
+            $('a').each(function () {
+                const href = $(this).attr('href');
+                if (links.length < 5 && href && href.startsWith('http')) {
+                    links.push(href);
+                }
+            });
+            return links;
+        }catch (error) {
+            console.error('Error gathering links', error);
+            throw error;
+        }
+
+        }
+    }
     
 
 
-}
+
 module.exports = cheerioScraper;

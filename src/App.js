@@ -1,9 +1,10 @@
-//import logo from './logo.svg';
 import './App.css';
 import React from 'react';
 import './App.css';
 import ScrapingComponent from './ScrapingComponent';
 import logo from './images/robot.png';
+
+//nettside forside, bilde og URL input/knapp
 
 function App() {
   return (

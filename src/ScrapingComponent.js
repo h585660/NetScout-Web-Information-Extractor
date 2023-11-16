@@ -3,35 +3,71 @@ import axios from 'axios';
 
 const ScrapingComponent = () => {
     const [url, setUrl] = useState('');
-    const [scrapedText, setScrapedText] = useState('');
-    const [scrapedLinkText, setScrapedLinkedText] = useState('');
-    const [scrapedJSText, setScrapedJSText] = useState('');
+    const [scrapedPages, setScrapedPages] = useState([]);
+    const [showChatInterface, setShowChatInterface] = useState(false);
 
-    const handleStaticScrape = async () => {
+//input URL søking
+    const handleScrapeAndFollowLinks = async () => {
         try {
-            const response = await axios.post('http://localhost:3001/scrape-static', { url, selector: 'p' });
-            setScrapedText(response.data.textData);
-            setScrapedLinkedText(response.data.linkData);
-        } catch (error) {
-            console.error('Error scraping static data:', error);
+            const response = await axios.post('http://localhost:3001/scrape-and-follow-links', { url });
+            if (Array.isArray(response.data.data)) {
+                setScrapedPages(response.data.data);
+
+                const gptResponse = await axios.post('http://localhost:3001/initial-gpt-interaction', { data: response.data.data});
+                const initialContext = gptResponse.data.context;
+                setShowChatInterface(true);
+            } else {
+                console.error('Unexpected response format:', response.data);
+            }
+
+        }catch (error) {
+            console.error('Error scraping and following links:', error);
         }
+        console.log('Finished action');
     };
 
 
-    const handleDynamicScrape = async () => {
+//fremtidig interface for chatGPT/scrapedData
+const ChatInterface = () => {
+    const [messages, setMessages] = useState([]);
+    const [userInput, setUserInput] = useState('');
+    
+    const sendMessage = async () => {
+        const newUserMessage = { type: 'user', text: userInput};
+        setMessages([...messages, newUserMessage]);
+
         try {
-            const response = await axios.post('http://localhost:3001/scrape-dynamic', { url, selector: 'p'});
-            setScrapedJSText(response.data.data);
+            const response = await axios.post('http://localhost:3001/interact-with-gpt', { userInput});
+            const gptMessage = { type: 'gpt', text: response.data.response};
+            setMessages(prevMessages => [...prevMessages, gptMessage]);
         } catch (error) {
-            console.error('Error scraping dynamic data:', error);
+            console.error('Error sending message:', error);
         }
-
+        setUserInput('');
     };
-            
-            
-
 
     return (
+        <div>
+            <div className="chat-window">
+                {messages.map((message, index) => (
+                    <div key={index} className={`message ${message.type}`}>
+                        {message.text}
+                    </div>
+                ))}
+            </div>
+            <input
+                type="text"
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                placeholder="Type your message"
+                />
+            <button onClick={sendMessage}>send</button>
+        </div>
+    );
+                };
+
+    return (
+        
         <div>
         <input
             type="text"
@@ -40,55 +76,32 @@ const ScrapingComponent = () => {
             onChange={(e) => setUrl(e.target.value)}
             placeholder="Feed URL..."
         />
-        <button onClick={handleStaticScrape}>Scrape Text</button>
-        <button onClick={handleDynamicScrape}>Scrape JS text</button>
-
-        
+        <button onClick={handleScrapeAndFollowLinks}>Scrape links</button>
 
 
         <div>
-            
-            {scrapedLinkText && (
-            
-            <textarea
-            
-                style={{backgroundColor: '#282c34', color: 'red', border: 'none', outline: 'none'}}
-                value={scrapedLinkText}
-                readOnly
-                rows={30}
-                cols={50}
-            />
-            
-            )}
-        
 
-            {scrapedText && (
-            
-            <textarea
-                style={{backgroundColor: '#282c34', color: 'white', border: 'none', outline: 'none'}}
-                value={scrapedText}
-                readOnly
-                rows={30}
-                cols={100}
-            />
-
-            )}
-
-            {scrapedJSText && (
-            
-            <textarea
-                style={{backgroundColor: '#282c34', color: 'white', border: 'none', outline: 'none'}}
-                value={scrapedJSText}
-                readOnly
-                rows={30}
-                cols={100}
-            />
-            )}
-
+            {scrapedPages.map((page, index) => (
+                <div key={ index }>
+                    <a href={page.link} target="_blank" rel="noopener noreferrer" style={{ color: 'blue'}}>
+                        {page.linkText || page.link}
+                    </a>
+                    <textarea
+                        style={{ backgroundColor: '#282c32', color: 'white', border: 'none', outline: 'none'}}
+                        value={page.textData}
+                        readOnly
+                        rows={10}
+                        cols={50}
+                    />
+                </div>
+            ))}
+            {showChatInterface && <ChatInterface />}
         </div>
     </div>
+
     );
-    };
-    
-    
-    export default ScrapingComponent;
+            };
+
+
+
+export default ScrapingComponent;
