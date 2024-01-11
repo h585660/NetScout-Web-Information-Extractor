@@ -27,9 +27,8 @@ Welcome to the Web Crawler Extraordinaire, the gateway to your personalized GPT 
 ## Upcoming Features 🔮
 
 - **Enhanced Link Exploration 🔍**: Navigating through web links like a seasoned explorer, uncovering related content far and wide.
-- **Data Aggregation and Formatting 📊**: Building a grand library of text, formatted for ChatGPT integration, transforming it into a personal chatbot for any domain of your choosing.
+- **Data Aggregation and Formatting 📊**: Building a grand library of text, formatted for ChatGPT integration, transforming it into a personal chatbot for any domain of your choosing!
 - **Advanced Domain-Limited Navigation 🧭**: Soon, our scraper will be an expert in navigating related domains, seeking out textual treasures with precision.
   
-- 
 
 **Note**: While Cheerio has bid us adieu, our adventure continues with renewed focus and capabilities!
