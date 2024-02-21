@@ -1,6 +1,7 @@
 # 🚀 Web Crawler Extraordinaire: The React Link-Explorer 📜
 
 Welcome to the Web Crawler Extraordinaire, the gateway to your personalized GPT chatbot experience! Who wants to browse the 🕸️ manually? Thanks to modern AI technology, and more importantly this amazing program, clicking links will be a thing of the past. This isn't just a web crawler tool (right now it is just that, though); it's a dynamic journey through the web's interconnected realm. Fueled by React's enchantment and armed with Node.js, Puppeteer, and Express, this adventurer dives deep into the web, link by link. More than just extracting data, it's your portal to crafting a GPT-powered chatbot tailored to any domain you desire. Transform any URL into a bespoke chatbot universe, where every piece of extracted information enriches your interactive, AI-driven dialogue!
+
 -**Purpose:** This project was the brainchild of discussions with students in the social services field and personal experience with hard-to-navigate public sites. The end result is supposed to be an interactive conversation partner and information look-up for convoluted public pages, and also an automatic paragraph searcher for students who need to make sitations to specific laws that apply to their research.
 
 ## Core Technologies 🛠️
